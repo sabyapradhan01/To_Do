@@ -1,14 +1,19 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-// Ask notification permission once
+// Ask notification permission
 if ("Notification" in window) {
     Notification.requestPermission();
 }
 
+// ADD TASK (SAFE VERSION)
 function addTask() {
-    const text = taskText.value.trim();
-    const date = taskDate.value;
-    const time = taskTime.value;
+    const textInput = document.getElementById("taskText");
+    const dateInput = document.getElementById("taskDate");
+    const timeInput = document.getElementById("taskTime");
+
+    const text = textInput.value.trim();
+    const date = dateInput.value;
+    const time = timeInput.value;
 
     if (!text || !date || !time) {
         alert("Please fill all fields");
@@ -24,40 +29,39 @@ function addTask() {
     };
 
     tasks.push(task);
+    saveTasks();
     scheduleNotification(task);
-    save();
-    render();
+    renderTasks();
 
-    taskText.value = "";
+    // Clear input
+    textInput.value = "";
 }
 
-// Save to localStorage
-function save() {
+// SAVE
+function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// Render sorted tasks with index
-function render() {
+// RENDER
+function renderTasks() {
     const list = document.getElementById("taskList");
     list.innerHTML = "";
 
     const now = new Date();
 
-    const upcoming = tasks
+    const upcomingTasks = tasks
         .filter(t => !t.completed && new Date(`${t.date}T${t.time}`) >= now)
         .sort((a, b) =>
             new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
         );
 
-    upcoming.forEach((task, index) => {
+    upcomingTasks.forEach((task, index) => {
         const li = document.createElement("li");
 
         li.innerHTML = `
             <div class="task">
                 <div>
-                    <div>
-                        <span class="index">${index + 1}.</span> ${task.text}
-                    </div>
+                    <strong>${index + 1}.</strong> ${task.text}
                     <div class="meta">${task.date} ⏰ ${task.time}</div>
                 </div>
                 <div class="actions">
@@ -71,40 +75,47 @@ function render() {
         list.appendChild(li);
     });
 
-    if (upcoming.length === 0) {
+    if (upcomingTasks.length === 0) {
         list.innerHTML =
-            "<p style='text-align:center;color:#7abaff;'>No upcoming tasks 🎉</p>";
+            `<p style="text-align:center;color:#7abaff;">
+                No upcoming tasks 🎉
+            </p>`;
     }
 }
 
-// Mark completed (auto removes from list)
+// COMPLETE
 function completeTask(id) {
     const task = tasks.find(t => t.id === id);
     task.completed = true;
-    save();
-    render();
+    saveTasks();
+    renderTasks();
 }
 
-// Edit task
+// EDIT
 function editTask(id) {
     const task = tasks.find(t => t.id === id);
 
-    task.text = prompt("Edit task", task.text) || task.text;
-    task.date = prompt("Edit date (YYYY-MM-DD)", task.date) || task.date;
-    task.time = prompt("Edit time (HH:MM)", task.time) || task.time;
+    const newText = prompt("Edit task", task.text);
+    if (newText !== null) task.text = newText;
 
-    save();
-    render();
+    const newDate = prompt("Edit date (YYYY-MM-DD)", task.date);
+    if (newDate !== null) task.date = newDate;
+
+    const newTime = prompt("Edit time (HH:MM)", task.time);
+    if (newTime !== null) task.time = newTime;
+
+    saveTasks();
+    renderTasks();
 }
 
-// Delete task
+// DELETE
 function deleteTask(id) {
     tasks = tasks.filter(t => t.id !== id);
-    save();
-    render();
+    saveTasks();
+    renderTasks();
 }
 
-// Notification scheduler
+// NOTIFICATION
 function scheduleNotification(task) {
     if (Notification.permission !== "granted") return;
 
@@ -122,6 +133,6 @@ function scheduleNotification(task) {
     }, delay);
 }
 
-// Re-register notifications on reload
+// Re-register notifications
 tasks.forEach(scheduleNotification);
-render();
+renderTasks();
