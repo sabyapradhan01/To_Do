@@ -1,11 +1,22 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-// Ask notification permission
-if ("Notification" in window) {
-    Notification.requestPermission();
+// Enable notifications manually
+function enableNotifications() {
+    if (!("Notification" in window)) {
+        alert("Notifications not supported in this browser");
+        return;
+    }
+
+    Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+            alert("Notifications enabled ✅");
+        } else {
+            alert("Please allow notifications from browser settings");
+        }
+    });
 }
 
-// ADD TASK (SAFE VERSION)
+// Add task
 function addTask() {
     const textInput = document.getElementById("taskText");
     const dateInput = document.getElementById("taskDate");
@@ -17,6 +28,12 @@ function addTask() {
 
     if (!text || !date || !time) {
         alert("Please fill all fields");
+        return;
+    }
+
+    const taskTime = new Date(`${date}T${time}`);
+    if (taskTime < new Date()) {
+        alert("Please select a future date and time");
         return;
     }
 
@@ -33,29 +50,28 @@ function addTask() {
     scheduleNotification(task);
     renderTasks();
 
-    // Clear input
     textInput.value = "";
 }
 
-// SAVE
+// Save
 function saveTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// RENDER
+// Render
 function renderTasks() {
     const list = document.getElementById("taskList");
     list.innerHTML = "";
 
     const now = new Date();
 
-    const upcomingTasks = tasks
+    const upcoming = tasks
         .filter(t => !t.completed && new Date(`${t.date}T${t.time}`) >= now)
         .sort((a, b) =>
             new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`)
         );
 
-    upcomingTasks.forEach((task, index) => {
+    upcoming.forEach((task, index) => {
         const li = document.createElement("li");
 
         li.innerHTML = `
@@ -75,7 +91,7 @@ function renderTasks() {
         list.appendChild(li);
     });
 
-    if (upcomingTasks.length === 0) {
+    if (upcoming.length === 0) {
         list.innerHTML =
             `<p style="text-align:center;color:#7abaff;">
                 No upcoming tasks 🎉
@@ -83,7 +99,7 @@ function renderTasks() {
     }
 }
 
-// COMPLETE
+// Complete
 function completeTask(id) {
     const task = tasks.find(t => t.id === id);
     task.completed = true;
@@ -91,7 +107,7 @@ function completeTask(id) {
     renderTasks();
 }
 
-// EDIT
+// Edit
 function editTask(id) {
     const task = tasks.find(t => t.id === id);
 
@@ -108,14 +124,14 @@ function editTask(id) {
     renderTasks();
 }
 
-// DELETE
+// Delete
 function deleteTask(id) {
     tasks = tasks.filter(t => t.id !== id);
     saveTasks();
     renderTasks();
 }
 
-// NOTIFICATION
+// Notifications
 function scheduleNotification(task) {
     if (Notification.permission !== "granted") return;
 
@@ -133,20 +149,6 @@ function scheduleNotification(task) {
     }, delay);
 }
 
-// Re-register notifications
+// Re-register notifications on reload
 tasks.forEach(scheduleNotification);
 renderTasks();
-
-function exportTasksForAndroid() {
-    if (!window.Android) return;
-
-    window.Android.saveTasks(
-        JSON.stringify(tasks)
-    );
-}
-
-function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    exportTasksForAndroid();
-}
-
