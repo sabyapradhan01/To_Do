@@ -50,6 +50,12 @@ h1 {
     cursor: pointer;
 }
 
+.notify-btn {
+    background: #0b2545;
+    color: #7abaff;
+    border: 1px solid #4da3ff;
+}
+
 ul {
     list-style: none;
     padding: 0;
@@ -67,12 +73,6 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.index {
-    font-weight: bold;
-    color: #7abaff;
-    margin-right: 6px;
 }
 
 .meta {
