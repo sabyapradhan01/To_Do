@@ -1,0 +1,90 @@
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle, #0a1f3c, #020c1b);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.app {
+    width: 95%;
+    max-width: 450px;
+    background: #071a2d;
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    color: white;
+}
+
+h1 {
+    text-align: center;
+    color: #4da3ff;
+    margin-bottom: 16px;
+}
+
+.task-input {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.task-input input,
+.task-input button {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.task-input button {
+    grid-column: span 2;
+    background: #4da3ff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 18px;
+}
+
+li {
+    background: #0b2545;
+    padding: 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.index {
+    font-weight: bold;
+    color: #7abaff;
+    margin-right: 6px;
+}
+
+.meta {
+    font-size: 12px;
+    color: #9ecbff;
+}
+
+.actions button {
+    background: none;
+    border: none;
+    color: #4da3ff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 6px;
+}
