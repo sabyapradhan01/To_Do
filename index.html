@@ -17,7 +17,10 @@
         <input type="date" id="taskDate">
         <input type="time" id="taskTime" value="09:00">
 
-        <button onclick="addTask()">Add</button>
+        <button type="button" onclick="addTask()">Add</button>
+        <button type="button" class="notify-btn" onclick="enableNotifications()">
+            Enable Notifications
+        </button>
     </div>
 
     <ul id="taskList"></ul>
