@@ -136,3 +136,17 @@ function scheduleNotification(task) {
 // Re-register notifications
 tasks.forEach(scheduleNotification);
 renderTasks();
+
+function exportTasksForAndroid() {
+    if (!window.Android) return;
+
+    window.Android.saveTasks(
+        JSON.stringify(tasks)
+    );
+}
+
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    exportTasksForAndroid();
+}
+
